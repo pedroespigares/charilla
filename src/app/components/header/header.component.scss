@@ -1,0 +1,207 @@
+@import "../../../scss/mixin.scss";
+@import "../../../scss/variables.scss";
+
+img{
+  margin: 0 !important;
+}
+
+/// Layout cabecera
+.header {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  @include response(xl) {
+    display: grid;
+    grid-template-columns: minmax(10rem, 1fr) repeat(7, minmax(min-content, 16rem)) minmax(10rem, 1fr);
+    grid-template-rows: repeat(2fr);
+    grid-gap: 2rem;
+  }
+  @include flex(
+    $direction: row,
+    $justify: space-around,
+    $align: center,
+    $gap: 0.5rem
+  );
+  background-color: var(--background-color);
+
+  &-user-img{
+    display: inline-block;
+    border-radius: 50%;
+  }
+}
+
+/// Layout Navs
+.header-nav {
+  grid-column: 8/10;
+  @include navigation($hamburger: true);
+
+  @include response(xl) {
+    grid-column: 5/10;
+    padding-right: 5rem;
+    @include navigation($hamburger: false);
+  }
+
+  &-icon {
+    @include response(xl) {
+      font-size: getFontSize(xl);
+    }
+    font-size: getFontSize(lg);
+    color: var(--cuaternary-color);
+    transition: $transition;
+    border: none;
+
+    &:hover {
+      cursor: pointer;
+      color: var(--primary-color);
+      transition: $transition;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  };
+
+  select{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* SVG background image */
+    background: none;
+    background-size: 12px;
+    background-position-x: right;
+    background-position-y: calc(100% - 10px);
+    background-repeat: no-repeat;
+  }
+}
+
+.user-type{
+  font-size: getFontSize(md);
+  color: var(--cuaternary-color);
+  margin: 0;
+}
+
+/// Layout Logo
+.logo {
+  grid-column: 1 / 5;
+  grid-row: 1 / 2;
+
+  @include response(xl) {
+    @include flex(
+      $direction: row,
+      $justify: center,
+      $align: center,
+      $gap: 0.5rem
+    );
+
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    padding-left: 6.5rem;
+  }
+
+  @include response(desktop){
+    padding-left: 1rem;
+    @include flex(
+      $direction: row,
+      $justify: center,
+      $align: center,
+      $gap: 3rem
+    );
+  }
+
+  padding: 1rem;
+
+  @include flex(
+    $direction: column,
+    $justify: center,
+    $align: center,
+    $gap: 0.5rem
+  );
+
+  &-img {
+    @include response(xl) {
+      width: 12rem;
+    }
+
+    width: 9rem;
+    transition: $transition;
+    cursor: pointer;
+  }
+
+  &-text {
+    @include response(xl) {
+      font-size: getFontSize(xxl);
+    }
+    font-size: getFontSize(xl);
+    font-family: $font-family-title;
+    text-transform: uppercase;
+    font-weight: getFontWeight(bold);
+    transition: $transition;
+    cursor: pointer;
+    text-align: center;
+
+    &-first {
+      color: var(--text-color);
+    }
+
+    &-second {
+      background-color: var(--primary-color);
+      background-image: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0)
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+  }
+}
+
+/// Componente de preparación de hamburguesa
+
+.open .header-nav-hamburger-lines-line-1 {
+  transform: rotate(47deg);
+}
+
+.open .header-nav-hamburger-lines-line-2 {
+  transform: scaleY(0);
+}
+
+.open .header-nav-hamburger-lines-line-3 {
+  transform: rotate(-47deg);
+}
+
+nav.open ul.header-nav-list {
+  left: 0;
+}
+
+
+.open-gear {
+  animation: rotate-center 0.5s ease-in-out both;
+}
+
+.close-gear {
+  animation: rotate-center-inverse 0.5s ease-in-out both;
+}
+
+a{
+  text-decoration: none;
+}
+
+@keyframes rotate-center {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes rotate-center-inverse {
+  0% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}

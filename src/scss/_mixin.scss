@@ -1,0 +1,1353 @@
+/// Mixin que cambia el contenido de un elemento de acuerdo a un breakpoint
+/// @example
+/// .container{
+///    @include response(xl){
+///       background-color: getColor(secondary);
+///   }
+/// }
+/// @param {string} $breakpoint -- Nombre del breakpoint
+///
+@mixin response($breakpoint) {
+  @if ($breakpoint == desktop) {
+    @media (min-width: 1750px) {
+      @content;
+    }
+  }
+  @else if ($breakpoint == xl) {
+    @media (min-width: 1500px) {
+      @content;
+    }
+  } @else if($breakpoint == lg) {
+    @media (min-width: 992px) {
+      @content;
+    }
+  } @else if($breakpoint == md) {
+    @media (min-width: 768px) {
+      @content;
+    }
+  } @else if($breakpoint == sm) {
+    @media (min-width: 576px) {
+      @content;
+    }
+  } @else if($breakpoint == xs) {
+    @media (min-width: 0px) {
+      @content;
+    }
+  }
+}
+
+/// Mixin para el menú de navegación
+/// @example
+/// .navigation{
+///   @include navigation();
+/// }
+/// @param {boolean} $hamburger [false] -- Preparar el menú para el menú hamburguesa
+///
+@mixin navigation($hamburger: false) {
+  @include flex($direction: row, $justify: space-between, $align: center);
+
+  @if $hamburger {
+    &-list {
+      @include flex(column, flex-start, center, 3rem);
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0.01rem;
+      padding-top: 13rem;
+      left: -200%;
+      right: 0.01rem;
+      text-align: center;
+      transition: all 0.5s;
+      z-index: 100;
+      background-color: var(--background-color);
+      background-repeat: no-repeat;
+      background-size: cover;
+      &-list::before{
+        background-color: var(--primary-color);
+        content: '';
+        display: block;
+        height: 100%;
+        position: absolute;
+        width: 100%;
+      }
+      &-actions {
+        @include flex(
+          $direction: row,
+          $justify: space-around,
+          $align: center,
+          $gap: 2rem
+        );
+      }
+      &-buttons {
+        @include flex(
+          $direction: column,
+          $justify: center,
+          $align: center,
+          $gap: 2rem
+        );
+      }
+    }
+  } @else {
+    &-list {
+      @include flex(
+        $direction: row,
+        $justify: flex-end,
+        $align: center,
+        $gap: 2.5rem
+      );
+      position: inherit;
+      align-items: center;
+      height: 100%;
+      padding-top: 0rem;
+      background-image: none;
+      transition: none;
+      &-actions {
+        @include flex(
+          $direction: row,
+          $justify: space-around,
+          $align: center,
+          $gap: 2rem
+        );
+      }
+      &-buttons {
+        @include flex(
+          $direction: row,
+          $justify: center,
+          $align: center,
+          $gap: 2rem
+        );
+      }
+    }
+  }
+
+  &-hamburger {
+    @include response(xl) {
+      display: none;
+    }
+
+    z-index: 200;
+    display: block;
+    font-size: getFontSize(md);
+    cursor: pointer;
+
+    &-lines {
+      height: 2em;
+      width: 2.5em;
+
+      @include flex(column, space-between);
+
+      border-radius: 50%;
+      &-line {
+        height: 0.2em;
+        width: 100%;
+        border-radius: 10px;
+        background-color: var(--primary-color);
+
+        &-1 {
+          transform-origin: 0% 0%;
+          transition: transform 0.4s ease-in-out;
+        }
+
+        &-2 {
+          transition: transform 0.2s ease-in-out;
+        }
+
+        &-3 {
+          transform-origin: 0% 100%;
+          transition: transform 0.4s ease-in-out;
+        }
+      }
+    }
+  }
+
+  &-item {
+    list-style: none;
+  }
+
+  &-link {
+    @include navbar_links();
+
+    &-dropdown {
+      @include navbar_links();
+    }
+  }
+
+  &-button-not-focus {
+    @include button(md, $width: 15rem);
+  }
+
+  &-button-focus {
+    @include button(md, true, $width: 15rem);
+  }
+}
+
+/// Mixin de posicionamiento con flexbox
+/// @example
+/// .container{
+///    @include flex();
+/// }
+/// @param {string} $direction [row] -- Dirección del flexbox
+/// @param {string} $justify [center]-- Justificación del contenido
+/// @param {string} $align [center]-- Alineación del contenido
+/// @param {string} $gap [0]-- Espacio entre elementos
+///
+@mixin flex($direction: row, $justify: center, $align: center, $gap: 0) {
+  display: flex;
+  flex-flow: $direction wrap;
+  justify-content: $justify;
+  align-items: $align;
+  gap: $gap;
+  flex-wrap: nowrap;
+}
+
+
+// Mixin para los botones
+/// @example
+/// .button{
+///   @include button();
+/// }
+/// @param {string} $size [lg] -- Tamaño del botón
+/// @param {boolean} $focus [false] -- Si el botón está enfocado
+/// @param {string} $width [null] -- Ancho del botón
+/// @param {boolean} $disabled [false] -- Si el botón está deshabilitado
+/// @param {string} $border-radius [10rem] -- Radio de las esquinas del botón
+/// @param {string} $heigth [null] -- Altura del botón
+///
+@mixin button(
+  $size: lg,
+  $focus: false,
+  $width: null,
+  $disabled: false,
+  $border-radius: 10rem,
+  $heigth: null
+) {
+  @if $focus {
+    color: white;
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0)
+    );
+  } @else {
+    color: var(--text-color);
+    background-color: transparent;
+    border: 1px solid getColor(normal-grayish-violet);
+  }
+  font-size: getFontSize($size);
+  font-family: $font-family-text;
+  transition: $transition;
+  border-radius: $border-radius;
+  padding: 1rem 3rem 1rem 3rem;
+  height: $heigth;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    color: var(--background-color);
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0)
+    );
+
+    transition: $transition;
+  }
+  @if $width != null {
+    width: $width;
+  }
+
+  @if $disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    &:hover {
+      background-color: var(--primary-color);
+    }
+  }
+}
+
+// Mixin para los títulos de las secciones en la página de inicio
+/// @example
+/// .section-title{
+///   @include section-titles();
+/// }
+///
+@mixin section-titles {
+  @include response(lg) {
+    font-size: getFontSize(xl);
+  }
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-size: getFontSize(md);
+  font-family: $font-family-title;
+  font-weight: getFontWeight(bold);
+  transition: $transition;
+  text-align: center;
+  background-color: var(--primary-color);
+  padding-bottom: 2rem;
+  padding-top: 10rem;
+}
+
+// Mixin para los subtítulos de las secciones en la página de inicio
+/// @example
+/// .section-subtitle{
+///   @include section-subtitles();
+/// }
+///
+@mixin section-subtitles {
+  @include response(lg) {
+    font-size: getFontSize(xxxl);
+  }
+  font-size: getFontSize(xxl);
+  font-family: $font-family-title;
+  font-weight: getFontWeight(bold);
+  transition: $transition;
+  text-align: center;
+  color: var(--text-color);
+}
+
+/// Mixin para los labels de los formularios
+/// @example
+/// .label{
+///   @include label();
+/// }
+///
+@mixin label {
+  @include response(xl) {
+    font-size: getFontSize(lg);
+  }
+  color: var(--primary-color);
+  font-size: getFontSize(sm);
+  font-family: $font-family-title;
+  font-weight: getFontWeight(bold);
+  transition: $transition;
+  padding-bottom: 1rem;
+}
+
+/// Mixin para los inputs de los formularios
+/// @example
+/// .input{
+///   @include input();
+/// }
+/// @param {string} $size [lg] -- Tamaño del input
+/// @param {string} $text-align [left] -- Alineación del texto
+/// @param {number} $width [16.5625em] -- Ancho del input
+///
+@mixin input($size: lg, $text-align: left, $width: 16.5625em) {
+  @include response(xl) {
+    font-size: getFontSize($size);
+    width: calc($width - 0.25em);
+  }
+
+  font-size: calc(getFontSize($size) - 0.5rem);
+  font-family: $font-family-text;
+  font-weight: getFontWeight(normal);
+  transition: $transition;
+  border: 1px solid var(--text-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: $text-align;
+
+  width: $width;
+  &:focus {
+    outline: none;
+    border: 1px solid var(--primary-color);
+  }
+}
+
+/// Mixin para los links del navbar
+/// @example
+/// .navbar-link{
+///   @include navbar_links();
+/// }
+///
+@mixin navbar_links() {
+  color: var(--text-color);
+  @include response(xl){
+    font-size: getFontSize(md-lg);
+  }
+  @include response(desktop){
+    font-size: getFontSize(lg);
+  }
+  font-family: $font-family-text;
+  font-size: getFontSize(lg);
+  text-decoration: none;
+  transition: $transition;
+  padding: 1rem 3rem 1rem 3rem;
+  font-weight: getFontWeight(semi-bold);
+  cursor: pointer;
+  &:hover {
+    color: var(--primary-color);
+    transition: $transition;
+  }
+}
+
+/// Mixin para las cards
+/// @example
+/// .card{
+///   @include card();
+/// }
+/// @param {boolean} $withHover [true] -- Si la card tiene hover o no
+///
+@mixin card($withHover: true) {
+  @include flex(column, center, center);
+  background-color: var(--background-color);
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1rem var(--box-shadow-thin);
+  transition: $transition;
+  cursor: pointer;
+  @if $withHover {
+    &:hover {
+      transform: translateY(-0.5rem);
+      box-shadow: 0 1rem 2rem var(--box-shadow-thin);
+      transition: $transition;
+    }
+  }
+}
+
+/// Mixin para el botón de eliminar en las cards
+/// @example
+/// .delete{
+///   @include deleteInCard();
+/// }
+///
+@mixin deleteInCard() {
+  color: white;
+  background-color: getColor(red);
+  background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0)
+    );
+  border: none;
+  flex-grow: 1;
+  font-size: getFontSize(xl);
+  border-bottom-left-radius: 1rem;
+  transition: $transition;
+  padding: 1rem 3rem 1rem 3rem;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/// Mixin para el botón de contacto en las cards
+/// @example
+/// .contact{
+///   @include contactInCard();
+/// }
+///
+@mixin contactInCard() {
+  color: white;
+  background-color: getColor(green);
+  background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0)
+    );
+  border: none;
+  font-family: $font-family-title;
+  flex-grow: 1;
+  font-size: getFontSize(lg);
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  transition: $transition;
+  padding: 1rem 3rem 1rem 3rem;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/// Mixin para el indicador de entrenador activo
+/// @example
+/// .contact{
+///   @include actualTrainerInCard();
+/// }
+///
+@mixin actualTrainerInCard() {
+  color: white;
+  background-color: getColor(red);
+  background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0)
+    );
+  border: none;
+  font-family: $font-family-title;
+  flex-grow: 1;
+  font-size: getFontSize(lg);
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  padding: 1rem 3rem 1rem 3rem;
+  text-decoration: none;
+}
+
+/// Mixin para el botón de editar en las cards
+/// @example
+/// .edit{
+///   @include editInCard();
+/// }
+///
+@mixin editInCard() {
+  color: white;
+  background-color: getColor(yellow);
+  background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0)
+    );
+  border: none;
+  flex-grow: 1;
+  font-size: getFontSize(xl);
+  transition: $transition;
+  padding: 1rem 3rem 1rem 3rem;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/// Mixin para el botón de ver en las cards
+/// @example
+/// .show{
+///   @include showInCard();
+/// }
+///
+@mixin showInCard() {
+  color: white;
+  background-color: getColor(green);
+  background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0)
+    );
+  border: none;
+  flex-grow: 1;
+  font-size: getFontSize(xl);
+  transition: $transition;
+  padding: 1rem 3rem 1rem 3rem;
+  border-bottom-right-radius: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/// Mixin para los títulos de las páginas
+/// @example
+/// .title{
+///   @include view_header();
+/// }
+/// @param {string} $size [5rem] -- Tamaño del título
+///
+@mixin view_header($size: 5rem) {
+  @include response(xl) {
+    font-size: $size;
+  }
+  font-size: calc($size / 1.5);
+  font-family: $font-family-title;
+  font-weight: getFontWeight(bold);
+  color: var(--primary-color);
+  // transition: $transition;
+  text-align: center;
+  padding-bottom: 2rem;
+  padding-top: 2rem;
+  background-color: var(--background-color);
+}
+
+/// Mixin para los botones de usuario (los presentes en las secciones usuarios para añadir o eliminar)
+/// @example
+/// .user-button{
+///   @include user_button();
+/// }
+/// @param {string} $padding [1rem] -- Padding del botón
+///
+@mixin user_button($padding: 1rem) {
+  width: 100%;
+  height: 10rem;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0)
+  );
+  font-family: $font-family-text;
+  font-size: getFontSize(xl);
+  transition: $transition;
+  padding: $padding $padding $padding $padding;
+  text-decoration: none;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+}
+
+/// Mixin para las migas de pan
+/// @example
+/// .breadcrumbs{
+///   @include breadcrumbs();
+/// }
+/// @param {string} $margin-left [3rem] -- Margen izquierdo de las migas de pan
+///
+@mixin breadcrumbs($margin-left: 3rem) {
+  @include flex(
+    $direction: row,
+    $justify: flex-start,
+    $align: center,
+    $gap: 1rem
+  );
+  padding-left: $margin-left;
+  padding-top: 2rem;
+  &-item {
+    padding: 0;
+    margin: 0;
+    @include response(lg){
+      font-size: getFontSize(md);
+    }
+    font-size: getFontSize(xs);
+    font-family: $font-family-text;
+    text-decoration: none;
+    transition: $transition;
+    color: var(--text-color);
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+  background-color: var(--background-color);
+}
+
+/// Mixin para los botones normales (diferentes al botón principal)
+/// @example
+/// .normal-button{
+///  @include normal_button();
+/// }
+/// @param {string} $color [getColor(red)] -- Color del botón
+///
+@mixin normal_button($color: getColor(red)) {
+  color: white;
+  background-color: $color;
+  border: none;
+  @include response(xl) {
+    font-size: getFontSize(md);
+  }
+  font-family: $font-family-text;
+  font-size: getFontSize(sm);
+  height: 5rem;
+  border-radius: 0.5rem;
+  transition: $transition;
+  padding: 1rem 3rem 1rem 3rem;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/// Mixin para el loader
+/// @example
+/// .loader{
+///  @include loader();
+/// }
+/// @param {string} $top [45%] -- Posición top del loader
+/// @param {string} $left [40%] -- Posición left del loader
+///
+@mixin loader($top: 45%, $left: 40%) {
+  display: block;
+  height: 6px;
+  width: 25vw;
+  border-radius: 30px;
+  background-color: rgba(0, 0, 0, 0.2);
+  position: relative;
+
+  top: $top;
+  left: $left;
+
+  &::before {
+    content: "";
+    position: absolute;
+    background: var(--primary-color);
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    border-radius: 30px;
+    animation: moving 1s ease-in-out infinite;
+  }
+
+  @keyframes moving {
+    50% {
+      width: 100%;
+    }
+
+    100% {
+      width: 0;
+      right: 0;
+      left: unset;
+    }
+  }
+}
+
+/// Mixin para los modales
+/// @example
+/// .modal{
+///   @include modal();
+/// }
+///
+@mixin modal() {
+  overflow: auto;
+  background-color: var(--background-color);
+  &-button {
+    @include response(xl) {
+      @include button(md, true, $border-radius: 0.5rem, $heigth: 5rem);
+    }
+    @include button(sm, true, $border-radius: 0.5rem, $heigth: 5rem);
+
+    &-delete {
+      @include normal_button();
+    }
+
+    &-update {
+      @include normal_button(getColor(yellow));
+    }
+  }
+
+  &-title {
+    @include response(xl) {
+      font-size: getFontSize(xl);
+    }
+    font-size: getFontSize(lg);
+    font-family: $font-family-title;
+    font-weight: getFontWeight(bold);
+    color: var(--primary-color);
+    text-align: center;
+  }
+
+  &-body {
+    &-title {
+      @include response(xl) {
+        font-size: getFontSize(lg);
+      }
+      font-size: getFontSize(md);
+      font-family: $font-family-title;
+      font-weight: getFontWeight(semi-bold);
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 1rem;
+
+      &-text {
+        @include response(xl) {
+          font-size: getFontSize(lg);
+        }
+        font-size: getFontSize(md);
+        font-family: $font-family-text;
+        font-weight: getFontWeight(bold);
+        color: var(--text-color);
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+
+      &-date {
+        @include response(xl) {
+          font-size: getFontSize(md);
+        }
+        font-size: getFontSize(sm);
+        font-family: $font-family-text;
+        font-weight: getFontWeight(normal);
+        color: var(--cuaternary-color);
+        text-align: center;
+        margin-bottom: 5rem;
+      }
+    }
+
+    &-content {
+      &-title {
+        @include response(xl) {
+          font-size: getFontSize(xl);
+        }
+        font-size: getFontSize(md);
+        font-family: $font-family-text;
+        font-weight: getFontWeight(bold);
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+
+      &-text {
+        @include response(xl) {
+          font-size: getFontSize(md);
+        }
+        font-size: getFontSize(xs);
+        font-family: $font-family-text;
+        color: var(--text-color);
+        text-align: center;
+      }
+    }
+  }
+}
+
+/// Mixin para las imagenes subidas
+/// @example
+/// .uploaded-image{
+///   @include uploadedImageStyles();
+/// }
+///
+@mixin uploadedImageStyles() {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/// Mixin para los formularios de editar
+/// @example
+/// .example(no_hace_falta_la_clase){
+///   @include edit('user');
+/// }
+/// @param {string} $name -- Nombre de la clase
+///
+@mixin edit($name) {
+  .edit-#{$name} {
+    z-index: 11;
+    border-radius: 0.5rem;
+    background-color: var(--background-color);
+    animation: scale-in-center 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    @include response(xl) {
+      overflow: auto;
+      &::-webkit-scrollbar {
+        width: 0.5rem;
+        height: 0.5rem;
+      }
+      &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--primary-color);
+      }
+      width: 50%;
+      box-shadow: 0px 0px 27px -3px var(--box-shadow-normal);
+    }
+
+    padding-bottom: 5rem;
+    margin-top: 5rem;
+    width: 100%;
+
+    &-logo-presentation {
+      @include response(desktop){
+        padding-top: 5rem;
+      }
+      padding-top: 2rem;
+      @include flex(
+        $direction: row,
+        $justify: center,
+        $align: center,
+        $gap: 0.5rem
+      );
+
+      &-img {
+        @include response(desktop) {
+          width: 9rem;
+          transition: $transition;
+          display: block;
+        }
+        display: none;
+      }
+
+      &-text {
+        @include response(desktop) {
+          font-size: getFontSize(xxl);
+          font-family: $font-family-title;
+          text-transform: uppercase;
+          font-weight: getFontWeight(bold);
+          display: block;
+        }
+
+        display: none;
+
+        &-first {
+          color: var(--text-color);
+        }
+
+        &-second {
+          background-color: var(--primary-color);
+          background-image: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0)
+          );
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+        }
+      }
+    }
+
+    &-title-container {
+      @include flex(
+        $direction: row,
+        $justify: center,
+        $align: center,
+        $gap: 2rem
+      );
+      @include response(desktop) {
+        font-size: getFontSize(xl);
+        padding-top: 0.5rem;
+        padding-bottom: 2.5rem;
+        padding-top: 2rem;
+      }
+      &-text {
+        @include response(desktop) {
+          font-size: getFontSize(xl);
+        }
+        font-size: getFontSize(lg);
+        font-family: $font-family-title;
+        font-weight: getFontWeight(bold);
+        text-align: center;
+        color: var(--text-color);
+      }
+
+      &-img {
+        width: 7rem;
+        height: 7rem;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+    }
+
+    &-form {
+      @include response(desktop){
+          @include flex(
+          $direction: column,
+          $justify: center,
+          $align: center,
+          $gap: 5rem
+        );
+      }
+      @include flex(
+        $direction: column,
+        $justify: center,
+        $align: center,
+        $gap: 2rem
+      );
+      width: 50%;
+      margin: 0 auto;
+
+      &-fieldset {
+        @include flex(
+          $direction: column,
+          $justify: center,
+          $align: center,
+          $gap: 1rem
+        );
+        border: none;
+        &-label {
+          @include label();
+          margin-bottom: 0;
+          &-file {
+            @include flex(
+              $direction: row,
+              $justify: space-between,
+              $align: center,
+            );
+            @include input($size: md);
+            @include response(desktop){
+              @include input();
+            }
+            padding-right: 2rem;
+            padding-left: 2rem;
+            &-text {
+              color: var(--cuaternary-color);
+              transition: $transition;
+              cursor: pointer;
+              flex: 1;
+              &:hover {
+                color: var(--primary-color);
+              }
+            }
+            &-img {
+              width: 3rem;
+              height: 3rem;
+              border-radius: 50%;
+              object-fit: cover;
+              cursor: pointer;
+
+              &-uploaded {
+                @include uploadedImageStyles();
+              }
+            }
+          }
+        }
+
+        &-img {
+          width: 15rem;
+          height: 15rem;
+          border-radius: 1rem;
+        }
+
+        &-input {
+          @include input($size: md);
+          @include response(desktop){
+            @include input();
+          }
+
+          &-file {
+            display: none;
+          }
+        }
+
+        &-textarea {
+          @include input($size: md);
+          @include response(desktop){
+            @include input();
+          }
+          resize: both;
+        }
+      }
+      &-button {
+        @include response(xl) {
+          @include button(lg, true);
+        }
+        @include button(sm, true);
+        &-disabled {
+          @include response(xl) {
+            @include button(lg, true, $disabled: true);
+          }
+          @include button(sm, true, $disabled: true);
+        }
+      }
+    }
+  }
+
+  .loader {
+    @include loader(0%, 0%);
+  }
+
+  .info-under{
+    font-size: getFontSize(xxs);
+    font-family: $font-family-text;
+    color: var(--cuaternary-color);
+    align-self: flex-start;
+    justify-self: flex-start;
+    &-error{
+      align-self: flex-start;
+      justify-self: flex-start;
+      color: getColor(red);
+      font-size: getFontSize(xxs);
+    }
+  }
+
+  @keyframes scale-in-center {
+    0% {
+      -webkit-transform: scale(0);
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      -webkit-transform: scale(1);
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+/// Mixin para los formularios de añadir
+/// @example
+/// .example(no_hace_falta_la_clase) {
+///   @include add('user');
+/// }
+/// @param {string} $name -- Nombre de la clase
+///
+///
+@mixin add($name) {
+  .add-#{$name} {
+    border-radius: 0.5rem;
+    animation: scale-in-center 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    z-index: 11;
+    background-color: var(--background-color);
+    padding-top: 2rem;
+    @include response(xl) {
+      &::-webkit-scrollbar {
+        width: 0.5rem;
+        height: 0.5rem;
+      }
+      &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--primary-color);
+      }
+      width: 50%;
+      box-shadow: 0px 0px 27px -3px var(--box-shadow-normal);
+    }
+    padding-bottom: 3rem;
+    width: 100%;
+    &-header {
+      @include view_header();
+      margin-bottom: 5rem;
+    }
+
+    &-logo-presentation {
+      @include response(desktop){
+        padding-top: 5rem;
+      }
+      padding-top: 2rem;
+      @include flex(
+        $direction: row,
+        $justify: center,
+        $align: center,
+        $gap: 0.5rem
+      );
+
+      &-img {
+        @include response(desktop) {
+          width: 9rem;
+          display: block;
+        }
+        display: none;
+      }
+
+      &-text {
+        @include response(desktop) {
+          font-size: getFontSize(xl);
+          font-family: $font-family-title;
+          text-transform: uppercase;
+          font-weight: getFontWeight(bold);
+          display: block;
+          color: var(--text-color);
+        }
+
+        display: none;
+
+        &-first {
+          color: var(--text-color);
+        }
+
+        &-second {
+          background-color: var(--primary-color);
+          background-image: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0)
+          );
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+        }
+      }
+    }
+
+    &-title {
+      @include response(desktop) {
+        font-size: getFontSize(xl);
+        padding-top: 0.5rem;
+        padding-bottom: 1rem;
+        padding-top: 2rem;
+      }
+      font-size: getFontSize(lg);
+      font-family: $font-family-title;
+      font-weight: getFontWeight(bold);
+      padding-bottom: 5rem;
+      text-align: center;
+      color: var(--text-color);
+    }
+    &-form {
+      @include response(desktop){
+          @include flex(
+          $direction: column,
+          $justify: center,
+          $align: center,
+          $gap: 2rem
+        );
+      }
+      @include flex(
+        $direction: column,
+        $justify: center,
+        $align: center,
+        $gap: 5rem
+      );
+      width: 50%;
+      margin: 0 auto;
+
+      &-fieldset {
+        @include flex(
+          $direction: column,
+          $justify: center,
+          $align: center,
+          $gap: 1rem
+        );
+        border: none;
+        &-label {
+          @include label();
+          margin-bottom: 0;
+          &-file {
+            @include flex(
+              $direction: row,
+              $justify: space-between,
+              $align: center,
+            );
+            @include input($size: md);
+            @include response(desktop){
+              @include input();
+            }
+            padding-right: 2rem;
+            padding-left: 2rem;
+            &-text {
+              color: var(--cuaternary-color);
+              transition: $transition;
+              cursor: pointer;
+              flex: 1;
+              &:hover {
+                color: var(--primary-color);
+              }
+            }
+            &-img {
+              width: 3rem;
+              height: 3rem;
+              border-radius: 50%;
+              object-fit: cover;
+              cursor: pointer;
+
+              &-uploaded {
+                @include uploadedImageStyles();
+              }
+            }
+          }
+        }
+
+        &-input {
+          @include input($size: md);
+          @include response(desktop){
+            @include input();
+          }
+
+          &-file {
+            display: none;
+          }
+        }
+
+        &-textarea {
+          @include input($size: md);
+          @include response(desktop){
+            @include input();
+          }
+          resize: both;
+        }
+      }
+      &-button {
+        @include response(xl) {
+          @include button(lg, true);
+        }
+        @include button(sm, true);
+        &-disabled {
+          @include response(xl) {
+            @include button(lg, true, $disabled: true);
+          }
+          @include button(sm, true, $disabled: true);
+        }
+      }
+    }
+  }
+
+  .info-under{
+    font-size: getFontSize(xxs);
+    font-family: $font-family-text;
+    color: var(--cuaternary-color);
+    align-self: flex-start;
+    justify-self: flex-start;
+    &-error{
+      align-self: flex-start;
+      justify-self: flex-start;
+      color: getColor(red);
+      font-size: getFontSize(xxs);
+    }
+  }
+
+  @keyframes scale-in-center {
+    0% {
+      -webkit-transform: scale(0);
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      -webkit-transform: scale(1);
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+/// Mixin para los toast
+/// @example
+/// .example(no_hace_falta_la_clase){
+///   @include toast($margin-top: 12rem, $full-width: false);
+/// }
+/// @param {number} $margin-top - Margen superior del toast
+/// @param {boolean} $full-width - Si el toast ocupa todo el ancho de la pantalla
+///
+@mixin toast($margin-top: 12.25rem, $full-width: false) {
+  ::ng-deep .toast {
+    background-color: var(--primary-color);
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0)
+    );
+    color: var(--background-color);
+    font-size: getFontSize(sm);
+    font-family: $font-family-text;
+    font-weight: getFontWeight(normal);
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    @if $full-width {
+      width: 100%;
+    } @else {
+      width: auto;
+    }
+    @include response(xl) {
+      font-size: getFontSize(md);
+    }
+  }
+
+  ::ng-deep .toast-header {
+    @include response(xl) {
+      font-size: getFontSize(lg);
+      background-color: var(--background-color);
+      color: var(--primary-color);
+      font-size: getFontSize(md);
+      font-family: $font-family-title;
+      font-weight: getFontWeight(normal);
+      display: flex;
+    }
+    display: none;
+  }
+
+  ::ng-deep .btn-close {
+    color: var(--primary-color);
+  }
+
+  .toast-container {
+    @include flex($direction: row, $justify: flex-end, $align: center);
+    width: 100%;
+    @include response(xl) {
+      margin-top: calc($margin-top + 8rem);
+    }
+    margin-top: $margin-top;
+    padding-right: 1rem;
+  }
+}
